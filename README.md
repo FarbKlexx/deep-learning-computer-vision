@@ -16,6 +16,17 @@ uv sync
 uv run python scripts/<name>.py
 ```
 
+## ML-Server
+
+`ml2-ifm-min.ad.fh-bielefeld.de` (Ubuntu 24.04)
+
+- GPU: 8× NVIDIA A16 mit je 15 GB VRAM (Treiber 580)
+- CPU: AMD EPYC 9124, 16 Kerne / 32 Threads
+- RAM: 188 GB
+- Speicher: ca. 6,4 TB frei unter `/home`
+
+Aktuelle GPU-Auslastung prüfen: `nvidia-smi`
+
 ## Ordner
 
 - `data/`: Datensätze (nicht im Repo)

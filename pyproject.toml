@@ -3,8 +3,15 @@ name = "deep-learning-computer-vision"
 version = "0.1.0"
 requires-python = ">=3.13"
 dependencies = [
+    "datasets>=5.1.0",
     "matplotlib>=3.11.2",
     "numpy>=2.5.4",
+    "peft>=0.21.2",
+    "timm>=1.0.30",
     "torch>=2.14.1",
     "torchvision>=0.29.1",
 ]
+
+[[tool.mypy.overrides]]
+module = ["datasets", "datasets.*"]
+ignore_missing_imports = true
