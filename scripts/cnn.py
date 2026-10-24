@@ -11,8 +11,6 @@ if __name__ == "__main__":
     device = get_device()          # "cuda" | "mps" | "cpu"
     print("Selected device: ", device)
 
-    num_classes = 196 # defined by the amount of labels in the dataset
-
     ## CNN
     weights = models.ResNeXt50_32X4D_Weights.IMAGENET1K_V2 # pre-trained weights
     model = models.resnext50_32x4d(weights=weights) # cnn that uses the weights
@@ -31,7 +29,8 @@ if __name__ == "__main__":
 
     # Data and Head
     train_dl, val_dl, test_dl, class_names = make_loaders(train_tf, eval_tf)
-    model.fc = nn.Linear(model.fc.in_features, num_classes) # reduce output features to fit to the 10 labels in the dataset
+    num_classes = len(class_names) # defined by the amount of labels in the dataset
+    model.fc = nn.Linear(model.fc.in_features, num_classes) # reduce output features to fit to the labels in the dataset
     
     # komplettes Netz, Backbone mit kleinerer LR
     model.requires_grad_(True)
