@@ -4,16 +4,31 @@ Uni-Projekt im Modul *Deep Learning for Computer Vision*. Bildklassifikation mit
 
 ## Setup
 
-Voraussetzung ist [uv](https://docs.astral.sh/uv/).
+Voraussetzung ist Python 3.13 oder neuer. Installation entweder mit [uv](https://docs.astral.sh/uv/) oder mit pip.
+
+**uv** (nutzt `pyproject.toml` und `uv.lock`):
 
 ```bash
 uv sync
 ```
 
-## Skripte ausführen
+**pip** (nutzt `requirements.txt`):
 
 ```bash
-uv run python scripts/<name>.py
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Neue Abhängigkeiten in beiden Dateien eintragen: mit `uv add <paket>` in `pyproject.toml` und von Hand in `requirements.txt`.
+
+## Skripte ausführen
+
+Aus dem Projektordner:
+
+```bash
+uv run python -m scripts.<name>   # mit uv
+python -m scripts.<name>          # mit pip, bei aktivierter .venv
 ```
 
 ## ML-Server
