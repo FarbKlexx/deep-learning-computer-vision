@@ -24,7 +24,7 @@ def make_loaders(train_tf, eval_tf, batch_size=32, eval_batch_size=64, num_worke
 
     Returns: train_dl, val_dl, test_dl, class_names
     """
-    ds = load_dataset("tanganke/eurosat")
+    ds = load_dataset("tanganke/stanford_cars")
     split = ds["train"].train_test_split(test_size=0.1, stratify_by_column="label", seed=seed)
     train_hf, val_hf, test_hf = split["train"], split["test"], ds["test"]  # 19.440 / 2.160 / 2.700
     class_names = train_hf.features["label"].names

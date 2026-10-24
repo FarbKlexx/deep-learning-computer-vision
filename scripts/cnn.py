@@ -1,7 +1,6 @@
 import torch
 from torch import nn
-from torch.utils.data import DataLoader
-from torchvision import datasets, models
+from torchvision import models
 from torchvision.transforms import v2
 
 from src.utils.device import get_device
@@ -12,25 +11,11 @@ if __name__ == "__main__":
     device = get_device()          # "cuda" | "mps" | "cpu"
     print("Selected device: ", device)
 
-    # Dataset: tanganke/eurosat (https://huggingface.co/datasets/tanganke/eurosat)
-    # label: The label for the image, which is one of 10 classes:
-    #   0: annual crop land
-    #   1: forest
-
-    #   2: brushland or shrubland
-    #   3: highway or road
-    #   4: industrial buildings or commercial buildings
-    #   5: pasture land
-    #   6: permanent crop land
-    #   7: residential buildings or homes or apartments
-    #   8: river
-    #   9: lake or sea
-
-    num_classes = 10 # defined by the amount of labels
+    num_classes = 196 # defined by the amount of labels in the dataset
 
     ## CNN
-    weights = models.ResNet50_Weights.IMAGENET1K_V2 # pre-trained weights
-    model = models.resnet50(weights=weights) # cnn that uses the weights
+    weights = models.ResNeXt50_32X4D_Weights.IMAGENET1K_V2 # pre-trained weights
+    model = models.resnext50_32x4d(weights=weights) # cnn that uses the weights
     print("Weights loaded.")
 
     # Preprocessing Pipeline
@@ -62,6 +47,7 @@ if __name__ == "__main__":
     epochs = 10
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)
 
+    # Training
     def train_one_epoch(model, loader):
         model.train()
         total = 0.0
@@ -75,6 +61,7 @@ if __name__ == "__main__":
             total += loss.item() * images.size(0)
         return total / len(loader.dataset)
 
+    # Evaluation
     @torch.no_grad()
     def evaluate(model, loader):
         model.eval()
@@ -94,7 +81,9 @@ if __name__ == "__main__":
         scheduler.step()
         print(f"epoch {epoch}  loss {loss:.3f}  val_acc {acc:.3f}", flush=True)
 
+    # Evaluate on Test-Set
     print(f"test_acc {evaluate(model, test_dl):.3f}")
+
     if device == "cuda":
         print(f"peak_vram {torch.cuda.max_memory_allocated() / 1e9:.1f} GB")
     elif device == "mps":  # MPS kennt keinen Peak-Wert, nur den aktuellen Verbrauch
@@ -104,5 +93,6 @@ if __name__ == "__main__":
     total = sum(p.numel() for p in model.parameters())
     print(f"{trainable:,} / {total:,}")
 
+    # Saving the results
     torch.save(model.state_dict(), "results/station1/resnet50_ft.pt")
     model.load_state_dict(torch.load("results/station1/resnet50_ft.pt", map_location=device))
