@@ -8,7 +8,7 @@ from scripts.load_dataset import make_loaders
 
 if __name__ == "__main__":
     # Init
-    device = get_device()          # "cuda" | "mps" | "cpu"
+    device = get_device() # "cuda" | "mps" | "cpu"
     print("Selected device: ", device)
 
     ## CNN
@@ -28,9 +28,9 @@ if __name__ == "__main__":
     print("Finished preprocessing.")
 
     # Data and Head
-    train_dl, val_dl, test_dl, class_names = make_loaders(train_tf, eval_tf)
+    train_dl, val_dl, test_dl, class_names = make_loaders(train_tf, eval_tf) # load the data
     num_classes = len(class_names) # defined by the amount of labels in the dataset
-    model.fc = nn.Linear(model.fc.in_features, num_classes) # reduce output features to fit to the labels in the dataset
+    model.fc = nn.Linear(model.fc.in_features, num_classes) # reduce output features to fit to the amount of labels in the dataset
     
     # komplettes Netz, Backbone mit kleinerer LR
     model.requires_grad_(True)
@@ -94,4 +94,6 @@ if __name__ == "__main__":
 
     # Saving the results
     torch.save(model.state_dict(), "results/station1/resnet50_ft.pt")
+
+    # Loading the model (for inference for example)
     model.load_state_dict(torch.load("results/station1/resnet50_ft.pt", map_location=device))
