@@ -3,6 +3,7 @@ name = "deep-learning-computer-vision"
 version = "0.1.0"
 requires-python = ">=3.13"
 dependencies = [
+    "cleanvision>=0.3.7",
     "datasets>=5.1.0",
     "matplotlib>=3.11.2",
     "numpy>=2.5.4",
