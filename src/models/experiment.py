@@ -53,6 +53,10 @@ class Experiment(ABC):
         train_hf, val_hf, test_hf = load_raw()
         num_classes = train_hf.features["label"].num_classes
 
+        # sanity check for dataset size
+        n_train, n_val, n_test = len(train_hf), len(val_hf), len(test_hf)
+        print("Dataset Size. n_train: ", n_train, "n_val: ", n_val, "n_test: ", n_test)
+
         # init the model
         model = self.build_model(num_classes).to(device)
         # apply transformation (augmentation for training and preprocessing for evaluation)
@@ -63,8 +67,8 @@ class Experiment(ABC):
         criterion = nn.CrossEntropyLoss()
 
         # sanity check for initial loss
-        inital_loss = evaluate(model, val_dl, criterion, device)
-        print("Intial Loss: ", inital_loss, "log(num_classes): ", math.log(num_classes))
+        initial_loss = evaluate(model, val_dl, criterion, device)
+        print("Intial Loss: ", initial_loss, "log(num_classes): ", math.log(num_classes))
 
 
         # init optimizer as AdamW (industry standard) for weight adjustment
@@ -86,9 +90,12 @@ class Experiment(ABC):
 
         result = {
             "name": self.name,
-            "init_loss": inital_loss["loss"],
-            "init_acc": inital_loss["acc"],
+            "init_loss": initial_loss["loss"],
+            "init_acc": initial_loss["acc"],
             "exp_init_loss": math.log(num_classes),
+            "n_train": n_train,
+            "n_val": n_val,
+            "n_test": n_test, 
             "test_acc": test["acc"],
             "test_loss": test["loss"],
             "best_val_acc": max(h["val_acc"] for h in history),
