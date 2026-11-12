@@ -4,6 +4,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 import torch
+from PIL import Image
 from torch import nn
 
 from src.data.loading import load_raw, make_loaders
@@ -11,31 +12,37 @@ from src.training.evaluation import count_params, evaluate, plot_history
 from src.training.trainer import Trainer
 from src.utils.device import get_device
 
-OUT = Path("results/station1")
+Transform = Callable[[Image.Image], torch.Tensor] # Datatype for transforms return statement
+
 
 # abstract template for a complete training-run independent of the model
 class Experiment(ABC):
-    name = "experiment"
+    name = "experiment"  # used for the output file names
 
     # model has to implement these itself
-    @abstractmethod
-    def build_model(self, num_classes) -> nn.Module: ...
 
     @abstractmethod
-    def transforms(self) -> tuple[Callable, Callable]: ...  # (train_tf, eval_tf)
+    def build_model(self, num_classes: int) -> nn.Module:
+        """Returns the model, output is one logit per class."""
 
     @abstractmethod
-    def param_groups(self, model) -> list[dict]: ... 
+    def transforms(self) -> tuple[Transform, Transform]:
+        """Returns (train_tf, eval_tf), each turns one image into a tensor of the same size."""
+
+    @abstractmethod
+    def param_groups(self, model: nn.Module) -> list[dict]:
+        """Returns the trainable parameters, e.g. [{"params": [...], "lr": 1e-4}]."""
 
     # model can implement these itself if necessary
-    def save(self, model):
-        pass
+    def save(self, model: nn.Module, out: Path) -> None:
+        """Saves the model additionally in its own format."""
 
-    def run(self, epochs=10):
+    def run(self, out: str | Path, epochs: int = 10) -> dict:
+        out = Path(out)
         # get which device we are training on for example:
         # cuda (for nvidia gpu), mps (apple gpu chip) or on cpu
         device = get_device()
-        OUT.mkdir(parents=True, exist_ok=True) # create output dir
+        out.mkdir(parents=True, exist_ok=True) # create output dir
 
         # load data
         train_hf, val_hf, test_hf = load_raw()
@@ -55,7 +62,7 @@ class Experiment(ABC):
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)
 
         # output path
-        best_path = OUT / f"{self.name}_best.pt"
+        best_path = out / f"{self.name}_best.pt"
 
         # trainingloop
         trainer = Trainer(model, optimizer, scheduler, criterion, device, best_path)
@@ -65,7 +72,7 @@ class Experiment(ABC):
         model.load_state_dict(torch.load(best_path, map_location=device))
         test = evaluate(model, test_dl, criterion, device)
 
-        self.save(model)
+        self.save(model, out)
 
         result = {
             "name": self.name,
@@ -76,8 +83,8 @@ class Experiment(ABC):
             "sec_per_epoch": sum(h["sec"] for h in history) / len(history),
             "peak_vram_gb": torch.cuda.max_memory_allocated() / 1e9 if torch.cuda.is_available() else None,
         }
-        (OUT / f"{self.name}.json").write_text(json.dumps(result, indent=2))
-        (OUT / f"{self.name}_history.json").write_text(json.dumps(history))
-        plot_history(history, OUT / f"{self.name}_curves.png")
+        (out / f"{self.name}.json").write_text(json.dumps(result, indent=2))
+        (out / f"{self.name}_history.json").write_text(json.dumps(history))
+        plot_history(history, out / f"{self.name}_curves.png")
         print(result)
         return result

@@ -2,7 +2,7 @@ import timm
 from peft import LoraConfig, get_peft_model
 
 from src.data.augmentation import train_transform
-from src.models.experiment import OUT, Experiment
+from src.models.experiment import Experiment
 
 MODEL_NAME = "vit_base_patch16_224.orig_in21k_ft_in1k"
 
@@ -33,5 +33,5 @@ class ViTLoRA(Experiment):
         # nur LoRA-Matrizen und Head sind trainierbar
         return [{"params": [p for p in model.parameters() if p.requires_grad], "lr": self.lr}]
 
-    def save(self, model):
-        model.save_pretrained(OUT / self.name)
+    def save(self, model, out):
+        model.save_pretrained(out / self.name)
