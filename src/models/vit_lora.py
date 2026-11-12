@@ -8,8 +8,9 @@ MODEL_NAME = "vit_base_patch16_224"
 
 
 class ViTLoRA(Experiment):
-    def __init__(self, rank=8, targets=("attn.qkv", "attn.proj"), lr=1e-3):
+    def __init__(self, rank=8, dropout=0.05, targets=("qkv", "proj"), lr=1e-3):
         self.rank = rank
+        self.dropout = dropout
         self.targets = list(targets)
         self.lr = lr
         self.name = f"vit_lora_r{rank}_{'-'.join(self.targets)}"
@@ -17,7 +18,7 @@ class ViTLoRA(Experiment):
     def build_model(self, num_classes):
         vit = timm.create_model(MODEL_NAME, pretrained=True, num_classes=num_classes)
         self.data_cfg = timm.data.resolve_model_data_config(vit)
-        config = LoraConfig(r=self.rank, lora_alpha=self.rank, target_modules=self.targets,
+        config = LoraConfig(r=self.rank, lora_alpha=2*self.rank, lora_dropout=self.dropout, target_modules=self.targets,
                             modules_to_save=["head"])
         model = get_peft_model(vit, config)  # Basismodell bleibt eingefroren
         model.print_trainable_parameters()
