@@ -1,4 +1,5 @@
 import json
+import math
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from pathlib import Path
@@ -60,6 +61,11 @@ class Experiment(ABC):
         
         # declare loss-function
         criterion = nn.CrossEntropyLoss()
+
+        # sanity check for initial loss
+        inital_loss = evaluate(model, val_dl, criterion, device)
+        print("Intial Loss: ", inital_loss, "log(num_classes): ", math.log(num_classes))
+
 
         # init optimizer as AdamW (industry standard) for weight adjustment
         optimizer = torch.optim.AdamW(self.param_groups(model))
