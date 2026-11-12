@@ -86,6 +86,9 @@ class Experiment(ABC):
 
         result = {
             "name": self.name,
+            "init_loss": inital_loss["loss"],
+            "init_acc": inital_loss["acc"],
+            "exp_init_loss": math.log(num_classes),
             "test_acc": test["acc"],
             "test_loss": test["loss"],
             "best_val_acc": max(h["val_acc"] for h in history),
