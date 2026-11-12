@@ -4,7 +4,7 @@ from peft import LoraConfig, get_peft_model
 from src.data.augmentation import train_transform
 from src.models.experiment import Experiment
 
-MODEL_NAME = "vit_base_patch16_224.orig_in21k_ft_in1k"
+MODEL_NAME = "vit_base_patch16_224"
 
 
 class ViTLoRA(Experiment):
