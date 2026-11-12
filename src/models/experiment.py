@@ -27,7 +27,11 @@ class Experiment(ABC):
 
     @abstractmethod
     def transforms(self) -> tuple[Transform, Transform]:
-        """Returns (train_tf, eval_tf), each turns one image into a tensor of the same size."""
+        """Returns (train_tf, eval_tf), each turns one image into a tensor of the same size.
+
+        Size and normalization have to match the pretrained weights. For train_tf use
+        train_transform() so all models get the same augmentation.
+        """
 
     @abstractmethod
     def param_groups(self, model: nn.Module) -> list[dict]:
