@@ -66,9 +66,11 @@ python -m scripts.<name>          # mit pip, bei aktivierter .venv
 Beispiel für den CNN-Lauf:
 
 ```bash
-uv run python -m scripts.cnn
-python -m scripts.cnn
+uv run python -m scripts.cnn_finetune.py
+python -m scripts.cnn_finetune.py
 ```
+
+Für die Datenanalyse und -bereinigung das Jupyter Notebook unter `notebooks/dataset_analysis.ipynb` ausführen. Es erezugt die Datei `drop.json`, die beschreibt welche Datenpunkte beim Training ausgelassen werden. Wenn der Seed verändert wird muss das Skript auf jeden Fall erneut gestartet werden. Ansonsten liegt die Datei für den Seed 67 im Repo vor.
 
 ## ML-Server
 
