@@ -2,22 +2,22 @@ import matplotlib.pyplot as plt
 import torch
 
 
-@torch.no_grad()
+@torch.no_grad() # disable building the gradients for evaluation
 def evaluate(model, loader, criterion, device):
-    model.eval()
+    model.eval() # switch model into evaluation-mode
     correct, total_loss = 0, 0.0
     for images, labels in loader:
         images, labels = images.to(device), labels.to(device)
-        logits = model(images)
+        logits = model(images) # predict on test set
         total_loss += criterion(logits, labels).item() * images.size(0)
-        correct += (logits.argmax(dim=1) == labels).sum().item()
+        correct += (logits.argmax(dim=1) == labels).sum().item() # check if prediction is correct
     n = len(loader.dataset)
     return {"loss": total_loss / n, "acc": correct / n}
 
-
+# counts how many parameter are trainable in model
 def count_params(model):
     trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    total = sum(p.numel() for p in model.parameters())
+    total = sum(p.numel() for n, p in model.named_parameters() if "original_module" not in n) # dont count duplicates
     return {"trainable": trainable, "total": total}
 
 
