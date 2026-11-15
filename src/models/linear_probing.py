@@ -1,4 +1,6 @@
 import timm
+from timm.data.config import resolve_model_data_config
+from timm.data.transforms_factory import create_transform
 from peft import LoraConfig, get_peft_model
 
 from src.data.augmentation import train_transform
@@ -16,7 +18,7 @@ class ViTLinearProbing(Experiment):
 
     def build_model(self, num_classes):
         vit = timm.create_model(MODEL_NAME, pretrained=True, num_classes=num_classes)
-        self.data_cfg = timm.data.resolve_model_data_config(vit)
+        self.data_cfg = resolve_model_data_config(vit)
         config = LoraConfig(r=self.rank, lora_alpha=self.rank, target_modules=self.targets,
                             modules_to_save=["head"])
         model = get_peft_model(vit, config)  # Basismodell bleibt eingefroren
@@ -26,7 +28,7 @@ class ViTLinearProbing(Experiment):
     def transforms(self):
         size = self.data_cfg["input_size"][-2:]
         train_tf = train_transform(size, self.data_cfg["mean"], self.data_cfg["std"])
-        eval_tf = timm.data.create_transform(**self.data_cfg, is_training=False)
+        eval_tf = create_transform(**self.data_cfg, is_training=False)
         return train_tf, eval_tf
 
     def param_groups(self, model):
