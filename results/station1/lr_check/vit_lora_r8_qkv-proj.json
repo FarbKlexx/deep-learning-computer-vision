@@ -1,0 +1,16 @@
+{
+  "name": "vit_lora_r8_qkv-proj",
+  "init_loss": 6.25696303531377,
+  "init_acc": 0.00404040404040404,
+  "exp_init_loss": 5.983936280687191,
+  "n_train": 17836,
+  "n_val": 1980,
+  "n_test": 19850,
+  "test_acc": 0.7291183879093199,
+  "test_loss": 0.9956798497075098,
+  "best_val_acc": 0.7540404040404041,
+  "trainable": 759949,
+  "total": 86558605,
+  "sec_per_epoch": 1993.9860406556866,
+  "peak_vram_gb": 3.51478016
+}
