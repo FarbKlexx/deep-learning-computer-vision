@@ -14,6 +14,17 @@ dependencies = [
     "torchvision>=0.29.1",
 ]
 
+# CUDA-Builds von PyTorch nur unter Windows (PyPI hat dort nur CPU-Builds).
+# Linux (ML2-Server) und macOS nutzen weiterhin PyPI.
+[[tool.uv.index]]
+name = "pytorch-cuda"
+url = "https://download.pytorch.org/whl/cu130"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cuda", marker = "sys_platform == 'win32'" }]
+torchvision = [{ index = "pytorch-cuda", marker = "sys_platform == 'win32'" }]
+
 [[tool.mypy.overrides]]
 module = ["datasets", "datasets.*"]
 ignore_missing_imports = true
