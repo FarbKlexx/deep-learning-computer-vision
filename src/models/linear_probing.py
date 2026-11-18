@@ -1,29 +1,32 @@
 import timm
 from timm.data.config import resolve_model_data_config
 from timm.data.transforms_factory import create_transform
-from peft import LoraConfig, get_peft_model
+import torch
 
 from src.data.augmentation import train_transform
 from src.models.experiment import Experiment
 
-MODEL_NAME = "vit_base_patch16_224.orig_in21k_ft_in1k"
+MODEL_NAME = "vit_base_patch16_224"
 
 
 class ViTLinearProbing(Experiment):
-    def __init__(self, rank=8, targets=("attn.qkv", "attn.proj"), lr=1e-3):
-        self.rank = rank
-        self.targets = list(targets)
+    def __init__(self, lr=1e-3):
         self.lr = lr
-        self.name = f"vit_linprob_r{rank}_{'-'.join(self.targets)}"
+        self.name = f"vit_linprob_lr{lr:g}"
 
     def build_model(self, num_classes):
         vit = timm.create_model(MODEL_NAME, pretrained=True, num_classes=num_classes)
         self.data_cfg = resolve_model_data_config(vit)
-        config = LoraConfig(r=self.rank, lora_alpha=self.rank, target_modules=self.targets,
-                            modules_to_save=["head"])
-        model = get_peft_model(vit, config)  # Basismodell bleibt eingefroren
-        model.print_trainable_parameters()
-        return model
+
+        # gesamtes Backbone einfrieren
+        for p in vit.parameters():
+            p.requires_grad = False
+
+        # nur Head trainieren
+        for p in vit.head.parameters():
+            p.requires_grad = True
+
+        return vit
 
     def transforms(self):
         size = self.data_cfg["input_size"][-2:]
@@ -32,8 +35,9 @@ class ViTLinearProbing(Experiment):
         return train_tf, eval_tf
 
     def param_groups(self, model):
-        # nur LoRA-Matrizen und Head sind trainierbar
+        # nur Head ist trainierbar
         return [{"params": [p for p in model.parameters() if p.requires_grad], "lr": self.lr}]
 
+    # nur Head speichern
     def save(self, model, out):
-        model.save_pretrained(out / self.name)
+        torch.save(model.head.state_dict(), out / f"{self.name}_head.pt")
