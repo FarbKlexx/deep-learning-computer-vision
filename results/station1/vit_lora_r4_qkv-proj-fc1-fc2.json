@@ -1,0 +1,16 @@
+{
+  "name": "vit_lora_r4_qkv-proj-fc1-fc2",
+  "init_loss": 6.224911750446666,
+  "init_acc": 0.0035353535353535356,
+  "exp_init_loss": 5.983936280687191,
+  "n_train": 17836,
+  "n_val": 1980,
+  "n_test": 19850,
+  "test_acc": 0.7060453400503778,
+  "test_loss": 1.305200592282437,
+  "best_val_acc": 0.7282828282828283,
+  "trainable": 901261,
+  "total": 86699917,
+  "sec_per_epoch": 2277.7153176749125,
+  "peak_vram_gb": 4.953954304
+}

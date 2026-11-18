@@ -1,0 +1,16 @@
+{
+  "name": "vit_lora_r16_qkv-proj",
+  "init_loss": 6.284537571608418,
+  "init_acc": 0.00101010101010101,
+  "exp_init_loss": 5.983936280687191,
+  "n_train": 17836,
+  "n_val": 1980,
+  "n_test": 19850,
+  "test_acc": 0.7034760705289672,
+  "test_loss": 1.3564145871133588,
+  "best_val_acc": 0.7313131313131314,
+  "trainable": 1214605,
+  "total": 87013261,
+  "sec_per_epoch": 1998.6675675492966,
+  "peak_vram_gb": 3.525278208
+}
