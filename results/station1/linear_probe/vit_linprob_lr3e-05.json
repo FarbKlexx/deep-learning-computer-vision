@@ -1,0 +1,16 @@
+{
+  "name": "vit_linprob_lr3e-05",
+  "init_loss": 6.260323624659066,
+  "init_acc": 0.00202020202020202,
+  "exp_init_loss": 5.983936280687191,
+  "n_train": 17836,
+  "n_val": 1980,
+  "n_test": 19850,
+  "test_acc": 0.6378841309823677,
+  "test_loss": 1.764243047591721,
+  "best_val_acc": 0.6424242424242425,
+  "trainable": 305293,
+  "total": 86103949,
+  "sec_per_epoch": 192.43541516000113,
+  "peak_vram_gb": 0.873884672
+}
